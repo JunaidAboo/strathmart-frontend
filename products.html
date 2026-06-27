@@ -136,40 +136,38 @@
         }
 
         function renderProducts(products) {
-            const grid = document.getElementById('productsGrid');
-            if (products.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1/-1">
-                        <div class="empty-icon">🛍️</div>
-                        <h3>No products found</h3>
-                        <p>Try a different category</p>
-                    </div>`;
-                return;
-            }
-
-            grid.innerHTML = products.map(p => {
-                const catName = getCategoryName(p.category_id);
-                const icon = icons[catName] || '🛍️';
-                return `
-                return `
-     <div class="product-card">
-    <div class="product-badge">${catName}</div>
-    ${p.image_url 
-        ? `<img src="${p.image_url}" alt="${p.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-           <div class="no-image" style="display:none">${icon}</div>`
-        : `<div class="no-image">${icon}</div>`
+    const grid = document.getElementById('productsGrid');
+    if (products.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1">
+                <div class="empty-icon">🛍️</div>
+                <h3>No products found</h3>
+                <p>Try a different category</p>
+            </div>`;
+        return;
     }
-    <div class="product-info">
-                        <h3>${p.name}</h3>
-                        <p class="category-tag">${p.description || ''}</p>
-                        <p class="price">KES ${p.price.toLocaleString()}</p>
-                        <p class="stock">✅ ${p.stock} in stock</p>
-                        <button class="btn btn-sm" onclick="addToCart(${p.id}, '${p.name}')">🛒 Add to Cart</button>
-                    </div>
-                </div>`;
-            }).join('');
-        }
 
+    grid.innerHTML = products.map(p => {
+        const catName = getCategoryName(p.category_id);
+        const icon = icons[catName] || '🛍️';
+        return `
+        <div class="product-card">
+            <div class="product-badge">${catName}</div>
+            ${p.image_url 
+                ? `<img src="${p.image_url}" alt="${p.name}" style="width:100%; height:190px; object-fit:cover;" onerror="this.style.display='none';">
+                   <div class="no-image" style="display:none">${icon}</div>`
+                : `<div class="no-image">${icon}</div>`
+            }
+            <div class="product-info">
+                <h3>${p.name}</h3>
+                <p class="category-tag">${p.description || ''}</p>
+                <p class="price">KES ${p.price.toLocaleString()}</p>
+                <p class="stock">✅ ${p.stock} in stock</p>
+                <button class="btn btn-sm" onclick="addToCart(${p.id}, '${p.name}')">🛒 Add to Cart</button>
+            </div>
+        </div>`;
+    }).join('');
+}
         function filterProducts(category, btn) {
             // Update active button
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
