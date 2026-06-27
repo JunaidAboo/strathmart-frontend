@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop | StrathMart</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <span>🎓 Welcome to StrathMart — Strathmore University's Official Marketplace</span>
+        <span>📍 Strathmore University, Nairobi</span>
+    </div>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="index.html" class="logo">
+            <img src="./logo.jpeg" alt="StrathMart Logo" style="height: 50px; width: auto; border-radius: 5px;">
+            <span>Strath<em>Mart</em></span>
+        </a>
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="products.html" class="active">🛍️ Shop</a></li>
+            <li><a href="cart.html">🛒 Cart <span class="nav-cart-badge" id="cartCount">0</span></a></li>
+            <li><a href="orders.html">📦 Orders</a></li>
+            <li><a href="rate.html">⭐ Rate Us</a></li>
+            <li><a href="contact.html">📩 Contact</a></li>
+            <li id="authLink"><a href="login.html">🔑 Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>🛍️ Shop StrathMart</h1>
+        <p>Browse all our products across all categories</p>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterProducts('all', this)">All Products</button>
+        <button class="filter-btn" onclick="filterProducts('Electronics', this)">💻 Electronics</button>
+        <button class="filter-btn" onclick="filterProducts('Merchandise', this)">👕 Merchandise</button>
+        <button class="filter-btn" onclick="filterProducts('Stationery', this)">✏️ Stationery</button>
+        <button class="filter-btn" onclick="filterProducts('Food', this)">🍽️ Food</button>
+    </div>
+
+    <!-- Products -->
+    <section class="section">
+        <div class="products-grid" id="productsGrid">
+            <div class="loading" style="grid-column: 1/-1">
+                <div class="spinner"></div>
+                <p>Loading products...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo-text">Strath<span>Mart</span></div>
+                <p>Strathmore University's official online marketplace.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="products.html">Shop</a></li>
+                    <li><a href="cart.html">Cart</a></li>
+                    <li><a href="orders.html">My Orders</a></li>
+                    <li><a href="rate.html">Rate Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 StrathMart. Made with <span class="red">❤️</span> at Strathmore University</span>
+            <span>Nairobi, Kenya 🇰🇪</span>
+        </div>
+    </footer>
+
+    <script>
+        const API = 'https://strathmart-api.onrender.com';
+        let allProducts = [];
+        let categories = [];
+
+        const icons = {
+            'Electronics': '💻',
+            'Merchandise': '👕',
+            'Stationery': '✏️',
+            'Food': '🍽️'
+        };
+
+        async function loadProducts() {
+            try {
+                const [productsRes, categoriesRes] = await Promise.all([
+                    fetch(`${API}/products/`),
+                    fetch(`${API}/products/categories`)
+                ]);
+
+                allProducts = await productsRes.json();
+                categories = await categoriesRes.json();
+
+                // Check URL param for category filter
+                const params = new URLSearchParams(window.location.search);
+                const cat = params.get('category');
+                if (cat) {
+                    filterProducts(cat, null);
+                } else {
+                    renderProducts(allProducts);
+                }
+            } catch (err) {
+                document.getElementById('productsGrid').innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1">
+                        <div class="empty-icon">⚠️</div>
+                        <h3>Could not load products</h3>
+                        <p>Please check your connection</p>
+                    </div>`;
+            }
+        }
+
+        function getCategoryName(categoryId) {
+            const cat = categories.find(c => c.id === categoryId);
+            return cat ? cat.name : 'Unknown';
+        }
+
+        function renderProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            if (products.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1">
+                        <div class="empty-icon">🛍️</div>
+                        <h3>No products found</h3>
+                        <p>Try a different category</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = products.map(p => {
+                const catName = getCategoryName(p.category_id);
+                const icon = icons[catName] || '🛍️';
+                return `
+                <div class="product-card">
+                    <div class="product-badge">${catName}</div>
+                    <div class="no-image">${icon}</div>
+                    <div class="product-info">
+                        <h3>${p.name}</h3>
+                        <p class="category-tag">${p.description || ''}</p>
+                        <p class="price">KES ${p.price.toLocaleString()}</p>
+                        <p class="stock">✅ ${p.stock} in stock</p>
+                        <button class="btn btn-sm" onclick="addToCart(${p.id}, '${p.name}')">🛒 Add to Cart</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function filterProducts(category, btn) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            if (category === 'all') {
+                renderProducts(allProducts);
+            } else {
+                const filtered = allProducts.filter(p => {
+                    const catName = getCategoryName(p.category_id);
+                    return catName === category;
+                });
+                renderProducts(filtered);
+            }
+        }
+
+        async function addToCart(productId, productName) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first to add items to cart!');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/cart/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ product_id: productId, quantity: 1 })
+                });
+
+                if (res.ok) {
+                    alert(`✅ ${productName} added to cart!`);
+                    updateCartCount();
+                } else {
+                    const data = await res.json();
+                    alert(`❌ ${data.detail}`);
+                }
+            } catch (err) {
+                alert('❌ Could not add to cart. Please try again.');
+            }
+        }
+
+        async function updateCartCount() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                const res = await fetch(`${API}/cart/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const cart = await res.json();
+                document.getElementById('cartCount').textContent = cart.length;
+            } catch (err) {}
+        }
+
+        // Check auth
+        const token = localStorage.getItem('token');
+        if (token) {
+            document.getElementById('authLink').innerHTML = '<a href="#" onclick="logout()">🚪 Logout</a>';
+            updateCartCount();
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        loadProducts();
+    </script>
+</body>
+</html>

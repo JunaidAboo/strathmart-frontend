@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart | StrathMart</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <span>🎓 Welcome to StrathMart — Strathmore University's Official Marketplace</span>
+        <span>📍 Strathmore University, Nairobi</span>
+    </div>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="index.html" class="logo">
+            <img src="./logo.jpeg" alt="StrathMart Logo" style="height: 50px; width: auto; border-radius: 5px;">
+            <span>Strath<em>Mart</em></span>
+        </a>
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="products.html">🛍️ Shop</a></li>
+            <li><a href="cart.html" class="active">🛒 Cart <span class="nav-cart-badge" id="cartCount">0</span></a></li>
+            <li><a href="orders.html">📦 Orders</a></li>
+            <li><a href="rate.html">⭐ Rate Us</a></li>
+            <li><a href="contact.html">📩 Contact</a></li>
+            <li id="authLink"><a href="login.html">🔑 Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>🛒 Your Cart</h1>
+        <p>Review your items and place your order</p>
+    </div>
+
+    <!-- Cart Content -->
+    <section class="section">
+        <div id="alertBox"></div>
+        <div class="cart-container" id="cartContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading cart...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-bottom" style="border:none; padding:0;">
+            <span>© 2026 StrathMart. Made with <span class="red">❤️</span> at Strathmore University</span>
+            <span>Nairobi, Kenya 🇰🇪</span>
+        </div>
+    </footer>
+
+    <script>
+        const API = 'https://strathmart-api.onrender.com';
+        const token = localStorage.getItem('token');
+        let cartItems = [];
+        let products = [];
+
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Auth link
+        document.getElementById('authLink').innerHTML = '<a href="#" onclick="logout()">🚪 Logout</a>';
+
+        async function loadCart() {
+            try {
+                const [cartRes, productsRes] = await Promise.all([
+                    fetch(`${API}/cart/`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                    fetch(`${API}/products/`)
+                ]);
+
+                cartItems = await cartRes.json();
+                products = await productsRes.json();
+
+                renderCart();
+                document.getElementById('cartCount').textContent = cartItems.length;
+            } catch (err) {
+                document.getElementById('cartContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <h3>Could not load cart</h3>
+                        <p>Please try again</p>
+                    </div>`;
+            }
+        }
+
+        function getProduct(productId) {
+            return products.find(p => p.id === productId);
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cartContainer');
+
+            if (cartItems.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1">
+                        <div class="empty-icon">🛒</div>
+                        <h3>Your cart is empty</h3>
+                        <p>Add some products to get started!</p>
+                        <a href="products.html" class="btn">🛍️ Shop Now</a>
+                    </div>`;
+                return;
+            }
+
+            let total = 0;
+            const itemsHTML = cartItems.map(item => {
+                const product = getProduct(item.product_id);
+                if (!product) return '';
+                const itemTotal = product.price * item.quantity;
+                total += itemTotal;
+                return `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <h3>${product.name}</h3>
+                        <p class="quantity">Quantity: ${item.quantity}</p>
+                        <p class="price">KES ${itemTotal.toLocaleString()}</p>
+                    </div>
+                    <button class="btn-danger" onclick="removeFromCart(${item.id})">🗑️ Remove</button>
+                </div>`;
+            }).join('');
+
+            container.innerHTML = `
+                <div id="cartItems">${itemsHTML}</div>
+                <div class="cart-summary">
+                    <h3>Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Items (${cartItems.length})</span>
+                        <span>KES ${total.toLocaleString()}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery</span>
+                        <span style="color: #28a745">Free</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>KES ${total.toLocaleString()}</span>
+                    </div>
+                    <button class="btn" style="width:100%; margin-top: 20px;" onclick="placeOrder()">
+                        ✅ Place Order
+                    </button>
+                    <a href="products.html" class="btn-outline" style="width:100%; margin-top: 10px; text-align:center; display:block; color: var(--blue); border-color: var(--blue);">
+                        🛍️ Continue Shopping
+                    </a>
+                </div>`;
+        }
+
+        async function removeFromCart(itemId) {
+            try {
+                const res = await fetch(`${API}/cart/${itemId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    cartItems = cartItems.filter(i => i.id !== itemId);
+                    renderCart();
+                    document.getElementById('cartCount').textContent = cartItems.length;
+                }
+            } catch (err) {
+                alert('❌ Could not remove item');
+            }
+        }
+
+        async function placeOrder() {
+            const alertBox = document.getElementById('alertBox');
+            try {
+                const res = await fetch(`${API}/orders/`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    alertBox.innerHTML = '<div class="alert alert-success">✅ Order placed successfully! Redirecting to orders...</div>';
+                    setTimeout(() => window.location.href = 'orders.html', 1500);
+                } else {
+                    const data = await res.json();
+                    alertBox.innerHTML = `<div class="alert alert-error">❌ ${data.detail}</div>`;
+                }
+            } catch (err) {
+                alertBox.innerHTML = '<div class="alert alert-error">❌ Could not place order</div>';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        loadCart();
+    </script>
+</body>
+</html>

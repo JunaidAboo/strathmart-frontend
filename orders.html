@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | StrathMart</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <span>🎓 Welcome to StrathMart — Strathmore University's Official Marketplace</span>
+        <span>📍 Strathmore University, Nairobi</span>
+    </div>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="index.html" class="logo">
+            <img src="./logo.jpeg" alt="StrathMart Logo" style="height: 50px; width: auto; border-radius: 5px;">
+            <span>Strath<em>Mart</em></span>
+        </a>
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="products.html">🛍️ Shop</a></li>
+            <li><a href="cart.html">🛒 Cart <span class="nav-cart-badge" id="cartCount">0</span></a></li>
+            <li><a href="orders.html" class="active">📦 Orders</a></li>
+            <li><a href="rate.html">⭐ Rate Us</a></li>
+            <li><a href="contact.html">📩 Contact</a></li>
+            <li id="authLink"><a href="login.html">🔑 Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>📦 My Orders</h1>
+        <p>Track all your StrathMart orders</p>
+    </div>
+
+    <!-- Orders -->
+    <section class="section">
+        <div id="ordersContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading orders...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-bottom" style="border:none; padding:0;">
+            <span>© 2026 StrathMart. Made with <span class="red">❤️</span> at Strathmore University</span>
+            <span>Nairobi, Kenya 🇰🇪</span>
+        </div>
+    </footer>
+
+    <script>
+        const API = 'https://strathmart-api.onrender.com';
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('authLink').innerHTML = '<a href="#" onclick="logout()">🚪 Logout</a>';
+
+        async function loadOrders() {
+            try {
+                const [ordersRes, productsRes] = await Promise.all([
+                    fetch(`${API}/orders/`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                    fetch(`${API}/products/`)
+                ]);
+
+                const orders = await ordersRes.json();
+                const products = await productsRes.json();
+
+                const container = document.getElementById('ordersContainer');
+
+                if (orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📦</div>
+                            <h3>No orders yet</h3>
+                            <p>Start shopping to see your orders here!</p>
+                            <a href="products.html" class="btn">🛍️ Shop Now</a>
+                        </div>`;
+                    return;
+                }
+
+                function getProductName(productId) {
+                    const p = products.find(p => p.id === productId);
+                    return p ? p.name : 'Unknown Product';
+                }
+
+                container.innerHTML = orders.reverse().map(order => `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div>
+                                <div class="order-id">Order #${order.id}</div>
+                                <div class="order-date">${new Date(order.created_at).toLocaleDateString('en-KE', { 
+                                    year: 'numeric', month: 'long', day: 'numeric',
+                                    hour: '2-digit', minute: '2-digit'
+                                })}</div>
+                            </div>
+                            <span class="status-badge status-${order.status}">${order.status.toUpperCase()}</span>
+                        </div>
+                        <div>
+                            ${order.items.map(item => `
+                                <div class="order-item">
+                                    <span>📦 ${getProductName(item.product_id)} × ${item.quantity}</span>
+                                    <span>KES ${(item.price_at_purchase * item.quantity).toLocaleString()}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="order-total">
+                            <span>Total</span>
+                            <span>KES ${order.total_price.toLocaleString()}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Update cart count
+                updateCartCount();
+
+            } catch (err) {
+                document.getElementById('ordersContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <h3>Could not load orders</h3>
+                        <p>Please try again</p>
+                    </div>`;
+            }
+        }
+
+        async function updateCartCount() {
+            try {
+                const res = await fetch(`${API}/cart/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const cart = await res.json();
+                document.getElementById('cartCount').textContent = cart.length;
+            } catch (err) {}
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        loadOrders();
+    </script>
+</body>
+</html>

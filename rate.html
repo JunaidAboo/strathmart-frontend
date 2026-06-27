@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Us | StrathMart</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <span>🎓 Welcome to StrathMart — Strathmore University's Official Marketplace</span>
+        <span>📍 Strathmore University, Nairobi</span>
+    </div>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="index.html" class="logo">
+            <img src="./logo.jpeg" alt="StrathMart Logo" style="height: 50px; width: auto; border-radius: 5px;">
+            <span>Strath<em>Mart</em></span>
+        </a>
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="products.html">🛍️ Shop</a></li>
+            <li><a href="cart.html">🛒 Cart <span class="nav-cart-badge" id="cartCount">0</span></a></li>
+            <li><a href="orders.html">📦 Orders</a></li>
+            <li><a href="rate.html" class="active">⭐ Rate Us</a></li>
+            <li><a href="contact.html">📩 Contact</a></li>
+            <li id="authLink"><a href="login.html">🔑 Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>⭐ Rate Us</h1>
+        <p>Tell us how we're doing — your feedback matters!</p>
+    </div>
+
+    <!-- Rate Form -->
+    <section class="section">
+        <div style="max-width: 600px; margin: 0 auto;">
+
+            <div class="form-container" style="margin: 0 0 40px 0;">
+                <h2>Leave a Review</h2>
+                <p class="subtitle">How was your StrathMart experience?</p>
+
+                <div id="alertBox"></div>
+
+                <div class="form-group" style="text-align: center;">
+                    <label>Your Rating</label>
+                    <div class="stars" id="starsContainer">
+                        <span class="star" onclick="setRating(1)" data-value="1">★</span>
+                        <span class="star" onclick="setRating(2)" data-value="2">★</span>
+                        <span class="star" onclick="setRating(3)" data-value="3">★</span>
+                        <span class="star" onclick="setRating(4)" data-value="4">★</span>
+                        <span class="star" onclick="setRating(5)" data-value="5">★</span>
+                    </div>
+                    <p id="ratingText" style="color: var(--gray); font-size: 14px;">Click a star to rate</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Comment (optional)</label>
+                    <textarea id="comment" placeholder="Tell us about your experience..."></textarea>
+                </div>
+
+                <button class="btn" onclick="submitRating()">⭐ Submit Review</button>
+                <p>You need to be <a href="login.html">logged in</a> to leave a review</p>
+            </div>
+
+            <!-- Existing Reviews -->
+            <div class="section-header">
+                <div class="tag">Community Reviews</div>
+                <h2>What Students Are Saying</h2>
+            </div>
+
+            <div id="ratingsContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading reviews...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-bottom" style="border:none; padding:0;">
+            <span>© 2026 StrathMart. Made with <span class="red">❤️</span> at Strathmore University</span>
+            <span>Nairobi, Kenya 🇰🇪</span>
+        </div>
+    </footer>
+
+    <script>
+        const API = 'https://strathmart-api.onrender.com';
+        const token = localStorage.getItem('token');
+        let selectedRating = 0;
+
+        if (token) {
+            document.getElementById('authLink').innerHTML = '<a href="#" onclick="logout()">🚪 Logout</a>';
+        }
+
+        const ratingLabels = {
+            1: '😞 Poor',
+            2: '😕 Fair',
+            3: '😊 Good',
+            4: '😄 Very Good',
+            5: '🤩 Excellent!'
+        };
+
+        function setRating(value) {
+            selectedRating = value;
+            document.querySelectorAll('.star').forEach((star, index) => {
+                star.classList.toggle('active', index < value);
+            });
+            document.getElementById('ratingText').textContent = ratingLabels[value];
+        }
+
+        // Hover effects
+        document.querySelectorAll('.star').forEach((star, index) => {
+            star.addEventListener('mouseover', () => {
+                document.querySelectorAll('.star').forEach((s, i) => {
+                    s.style.color = i <= index ? '#f0a500' : '#ddd';
+                });
+            });
+            star.addEventListener('mouseout', () => {
+                document.querySelectorAll('.star').forEach((s, i) => {
+                    s.style.color = i < selectedRating ? '#f0a500' : '#ddd';
+                });
+            });
+        });
+
+        async function submitRating() {
+            const alertBox = document.getElementById('alertBox');
+
+            if (!token) {
+                alertBox.innerHTML = '<div class="alert alert-error">❌ Please login first to leave a review</div>';
+                return;
+            }
+
+            if (selectedRating === 0) {
+                alertBox.innerHTML = '<div class="alert alert-error">⚠️ Please select a star rating</div>';
+                return;
+            }
+
+            const comment = document.getElementById('comment').value;
+
+            try {
+                const res = await fetch(`${API}/ratings/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        stars: selectedRating,
+                        comment: comment || null
+                    })
+                });
+
+                if (res.ok) {
+                    alertBox.innerHTML = '<div class="alert alert-success">✅ Thank you for your review!</div>';
+                    document.getElementById('comment').value = '';
+                    setRating(0);
+                    loadRatings();
+                } else {
+                    const data = await res.json();
+                    alertBox.innerHTML = `<div class="alert alert-error">❌ ${data.detail}</div>`;
+                }
+            } catch (err) {
+                alertBox.innerHTML = '<div class="alert alert-error">❌ Could not submit review</div>';
+            }
+        }
+
+        async function loadRatings() {
+            try {
+                const res = await fetch(`${API}/ratings/`);
+                const ratings = await res.json();
+                const container = document.getElementById('ratingsContainer');
+
+                if (ratings.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">⭐</div>
+                            <h3>No reviews yet</h3>
+                            <p>Be the first to leave a review!</p>
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = ratings.reverse().map(r => `
+                    <div class="rating-card">
+                        <div class="stars-display">${'★'.repeat(r.stars)}${'☆'.repeat(5 - r.stars)}</div>
+                        <p class="comment">${r.comment || 'No comment left'}</p>
+                        <p class="meta">📅 ${new Date(r.created_at).toLocaleDateString('en-KE', {
+                            year: 'numeric', month: 'long', day: 'numeric'
+                        })}</p>
+                    </div>
+                `).join('');
+            } catch (err) {
+                document.getElementById('ratingsContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <h3>Could not load reviews</h3>
+                    </div>`;
+            }
+        }
+
+        async function updateCartCount() {
+            if (!token) return;
+            try {
+                const res = await fetch(`${API}/cart/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const cart = await res.json();
+                document.getElementById('cartCount').textContent = cart.length;
+            } catch (err) {}
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        loadRatings();
+        updateCartCount();
+    </script>
+</body>
+</html>

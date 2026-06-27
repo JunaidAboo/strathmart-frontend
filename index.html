@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StrathMart | Strathmore University Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <span>🎓 Welcome to StrathMart — Strathmore University's Official Marketplace</span>
+        <span>📍 Strathmore University, Nairobi</span>
+    </div>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="index.html" class="logo">
+    <img src="./logo.jpeg" alt="StrathMart Logo" style="height: 50px; width: auto; border-radius: 5px;">
+    <span>Strath<em>Mart</em></span>
+        </a>
+        <ul>
+            <li><a href="index.html" class="active">🏠 Home</a></li>
+            <li><a href="products.html">🛍️ Shop</a></li>
+            <li><a href="cart.html">🛒 Cart <span class="nav-cart-badge" id="cartCount">0</span></a></li>
+            <li><a href="orders.html">📦 Orders</a></li>
+            <li><a href="rate.html">⭐ Rate Us</a></li>
+            <li><a href="contact.html">📩 Contact</a></li>
+            <li id="authLink"><a href="login.html">🔑 Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">✨ Strathmore's #1 Campus Marketplace</div>
+        <h1>Shop Everything You Need<br><span>Right on Campus</span></h1>
+        <p>From electronics to cafeteria food, Strathmore merchandise to stationery — StrathMart has it all, delivered to you on campus.</p>
+        <div class="hero-buttons">
+            <a href="products.html" class="btn">🛍️ Shop Now</a>
+            <a href="register.html" class="btn-outline">Create Account</a>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <h3>500+</h3>
+                <p>Products Available</p>
+            </div>
+            <div class="hero-stat">
+                <h3>4</h3>
+                <p>Product Categories</p>
+            </div>
+            <div class="hero-stat">
+                <h3>1000+</h3>
+                <p>Happy Students</p>
+            </div>
+            <div class="hero-stat">
+                <h3>24/7</h3>
+                <p>Online Ordering</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="section" style="background: white;">
+        <div class="section-header">
+            <div class="tag">Browse by Category</div>
+            <h2>What are you looking for?</h2>
+            <p>Explore our wide range of products across all categories</p>
+        </div>
+        <div class="categories">
+            <a href="products.html?category=Electronics" class="category-card">
+                <span class="icon">💻</span>
+                <h3>Electronics</h3>
+            </a>
+            <a href="products.html?category=Merchandise" class="category-card">
+                <span class="icon">👕</span>
+                <h3>Merchandise</h3>
+            </a>
+            <a href="products.html?category=Stationery" class="category-card">
+                <span class="icon">✏️</span>
+                <h3>Stationery</h3>
+            </a>
+            <a href="products.html?category=Food" class="category-card">
+                <span class="icon">🍽️</span>
+                <h3>Food</h3>
+            </a>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="section">
+        <div class="section-header">
+            <div class="tag">Featured Products</div>
+            <h2>Popular Right Now</h2>
+            <p>Check out what other students are buying</p>
+        </div>
+        <div class="products-grid" id="featuredProducts">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading products...</p>
+            </div>
+        </div>
+        <div style="text-align:center; margin-top: 40px;">
+            <a href="products.html" class="btn btn-blue">View All Products</a>
+        </div>
+    </section>
+
+    <!-- Why StrathMart -->
+    <section class="section" style="background: white;">
+        <div class="section-header">
+            <div class="tag">Why StrathMart?</div>
+            <h2>Built for Strathmore Students</h2>
+        </div>
+        <div class="categories">
+            <div class="category-card">
+                <span class="icon">⚡</span>
+                <h3>Fast & Easy</h3>
+            </div>
+            <div class="category-card">
+                <span class="icon">🔒</span>
+                <h3>Secure Payments</h3>
+            </div>
+            <div class="category-card">
+                <span class="icon">🎓</span>
+                <h3>Student Friendly</h3>
+            </div>
+            <div class="category-card">
+                <span class="icon">📦</span>
+                <h3>On Campus Delivery</h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo-text">Strath<span>Mart</span></div>
+                <p>Strathmore University's official online marketplace. Shop electronics, merchandise, stationery, and cafeteria food all in one place.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="products.html">Shop</a></li>
+                    <li><a href="cart.html">Cart</a></li>
+                    <li><a href="orders.html">My Orders</a></li>
+                    <li><a href="rate.html">Rate Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 StrathMart. Made with <span class="red">❤️</span> at Strathmore University</span>
+            <span>Nairobi, Kenya 🇰🇪</span>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        const API = 'https://strathmart-api.onrender.com';
+
+        // Load featured products
+        async function loadFeaturedProducts() {
+            try {
+                const res = await fetch(`${API}/products/`);
+                const products = await res.json();
+                const container = document.getElementById('featuredProducts');
+
+                if (products.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1">
+                            <div class="empty-icon">🛍️</div>
+                            <h3>No products yet</h3>
+                            <p>Check back soon!</p>
+                        </div>`;
+                    return;
+                }
+
+                const icons = { 'Electronics': '💻', 'Merchandise': '👕', 'Stationery': '✏️', 'Food': '🍽️' };
+                container.innerHTML = products.slice(0, 8).map(p => `
+                    <div class="product-card">
+                        <div class="product-badge">New</div>
+                        <div class="no-image">${icons[p.category_id] || '🛍️'}</div>
+                        <div class="product-info">
+                            <h3>${p.name}</h3>
+                            <p class="price">KES ${p.price.toLocaleString()}</p>
+                            <p class="stock">✅ ${p.stock} in stock</p>
+                            <a href="products.html" class="btn btn-sm">View Product</a>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                document.getElementById('featuredProducts').innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1">
+                        <div class="empty-icon">⚠️</div>
+                        <h3>Could not load products</h3>
+                        <p>Please check your connection</p>
+                    </div>`;
+            }
+        }
+
+        // Check if logged in
+        const token = localStorage.getItem('token');
+        if (token) {
+            document.getElementById('authLink').innerHTML = '<a href="#" onclick="logout()">🚪 Logout</a>';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        loadFeaturedProducts();
+    </script>
+</body>
+</html>

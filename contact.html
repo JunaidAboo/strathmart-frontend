@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | StrathMart</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <span>🎓 Welcome to StrathMart — Strathmore University's Official Marketplace</span>
+        <span>📍 Strathmore University, Nairobi</span>
+    </div>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="index.html" class="logo">
+            <img src="./logo.jpeg" alt="StrathMart Logo" style="height: 50px; width: auto; border-radius: 5px;">
+            <span>Strath<em>Mart</em></span>
+        </a>
+        <ul>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="products.html">🛍️ Shop</a></li>
+            <li><a href="cart.html">🛒 Cart <span class="nav-cart-badge" id="cartCount">0</span></a></li>
+            <li><a href="orders.html">📦 Orders</a></li>
+            <li><a href="rate.html">⭐ Rate Us</a></li>
+            <li><a href="contact.html" class="active">📩 Contact</a></li>
+            <li id="authLink"><a href="login.html">🔑 Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>📩 Contact Us</h1>
+        <p>Have a problem or question? We're here to help!</p>
+    </div>
+
+    <!-- Contact Content -->
+    <section class="section">
+        <div style="max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+
+            <!-- Contact Form -->
+            <div class="form-container" style="margin: 0;">
+                <h2>Send us a Message</h2>
+                <p class="subtitle">We'll get back to you as soon as possible</p>
+
+                <div id="alertBox"></div>
+
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" id="subject" placeholder="e.g. Missing order, Payment issue...">
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="message" placeholder="Describe your issue or question in detail..."></textarea>
+                </div>
+                <button class="btn" onclick="submitContact()">📩 Send Message</button>
+                <p>You can also contact us <a href="login.html">logged in</a> to track your message</p>
+            </div>
+
+            <!-- Contact Info -->
+            <div>
+                <div class="section-header" style="text-align: left; margin-bottom: 30px;">
+                    <div class="tag">Get in Touch</div>
+                    <h2>Contact Information</h2>
+                    <p>Reach us through any of these channels</p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="rating-card" style="border-left-color: var(--red);">
+                        <h3 style="color: var(--dark-blue); margin-bottom: 8px;">📍 Location</h3>
+                        <p>Strathmore University<br>Ole Sangale Road, Madaraka<br>Nairobi, Kenya</p>
+                    </div>
+                    <div class="rating-card" style="border-left-color: var(--red);">
+                        <h3 style="color: var(--dark-blue); margin-bottom: 8px;">📧 Email</h3>
+                        <p>strathmart@strathmore.edu</p>
+                    </div>
+                    <div class="rating-card" style="border-left-color: var(--red);">
+                        <h3 style="color: var(--dark-blue); margin-bottom: 8px;">⏰ Support Hours</h3>
+                        <p>Monday – Friday: 8am – 6pm<br>Saturday: 9am – 1pm<br>Sunday: Closed</p>
+                    </div>
+                    <div class="rating-card" style="border-left-color: var(--red);">
+                        <h3 style="color: var(--dark-blue); margin-bottom: 8px;">⚡ Response Time</h3>
+                        <p>We typically respond within <strong>24 hours</strong> on business days.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo-text">Strath<span>Mart</span></div>
+                <p>Strathmore University's official online marketplace.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="products.html">Shop</a></li>
+                    <li><a href="cart.html">Cart</a></li>
+                    <li><a href="orders.html">My Orders</a></li>
+                    <li><a href="rate.html">Rate Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 StrathMart. Made with <span class="red">❤️</span> at Strathmore University</span>
+            <span>Nairobi, Kenya 🇰🇪</span>
+        </div>
+    </footer>
+
+    <script>
+        const API = 'https://strathmart-api.onrender.com';
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            document.getElementById('authLink').innerHTML = '<a href="#" onclick="logout()">🚪 Logout</a>';
+            updateCartCount();
+        }
+
+        async function submitContact() {
+            const alertBox = document.getElementById('alertBox');
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+
+            if (!subject || !message) {
+                alertBox.innerHTML = '<div class="alert alert-error">⚠️ Please fill in all fields</div>';
+                return;
+            }
+
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                const res = await fetch(`${API}/contacts/`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({ subject, message })
+                });
+
+                if (res.ok) {
+                    alertBox.innerHTML = '<div class="alert alert-success">✅ Message sent! We\'ll get back to you within 24 hours.</div>';
+                    document.getElementById('subject').value = '';
+                    document.getElementById('message').value = '';
+                } else {
+                    const data = await res.json();
+                    alertBox.innerHTML = `<div class="alert alert-error">❌ ${data.detail}</div>`;
+                }
+            } catch (err) {
+                alertBox.innerHTML = '<div class="alert alert-error">❌ Could not send message. Please try again.</div>';
+            }
+        }
+
+        async function updateCartCount() {
+            try {
+                const res = await fetch(`${API}/cart/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const cart = await res.json();
+                document.getElementById('cartCount').textContent = cart.length;
+            } catch (err) {}
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
