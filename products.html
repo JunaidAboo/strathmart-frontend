@@ -151,10 +151,15 @@
                 const catName = getCategoryName(p.category_id);
                 const icon = icons[catName] || '🛍️';
                 return `
-                <div class="product-card">
-                    <div class="product-badge">${catName}</div>
-                    <div class="no-image">${icon}</div>
-                    <div class="product-info">
+                return `
+     <div class="product-card">
+    <div class="product-badge">${catName}</div>
+    ${p.image_url 
+        ? `<img src="${p.image_url}" alt="${p.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+           <div class="no-image" style="display:none">${icon}</div>`
+        : `<div class="no-image">${icon}</div>`
+    }
+    <div class="product-info">
                         <h3>${p.name}</h3>
                         <p class="category-tag">${p.description || ''}</p>
                         <p class="price">KES ${p.price.toLocaleString()}</p>
