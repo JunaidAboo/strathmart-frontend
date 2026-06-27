@@ -25,3 +25,18 @@ function showToast(message, type = 'info', duration = 3000) {
         setTimeout(() => toast.remove(), 300);
     }, duration);
 }
+
+// ── Mobile Menu Toggle ──
+function toggleMenu() {
+    const menu = document.getElementById('navMenu');
+    menu.classList.toggle('open');
+}
+
+// Close menu when a link is clicked
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('navMenu');
+    const hamburger = document.querySelector('.hamburger');
+    if (menu && hamburger && !menu.contains(e.target) && !hamburger.contains(e.target)) {
+        menu.classList.remove('open');
+    }
+});
