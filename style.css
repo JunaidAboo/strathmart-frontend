@@ -863,3 +863,166 @@ footer {
     nav ul li a { padding: 6px 10px; font-size: 13px; }
     .hero-stats { gap: 25px; }
 }
+
+/* ── Toast Notifications ── */
+.toast-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    background: white;
+    border-radius: 10px;
+    padding: 15px 20px;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 280px;
+    max-width: 380px;
+    animation: slideIn 0.3s ease;
+    border-left: 4px solid var(--blue);
+}
+
+.toast.success { border-left-color: #28a745; }
+.toast.error { border-left-color: var(--red); }
+.toast.info { border-left-color: var(--blue); }
+
+.toast-icon { font-size: 22px; }
+.toast-message { font-size: 14px; font-weight: 600; color: #333; flex: 1; }
+
+.toast-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+}
+
+.toast-close:hover { color: #333; }
+
+@keyframes slideIn {
+    from { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100px); opacity: 0; }
+}
+
+/* ── Hero Animations ── */
+.hero-badge {
+    animation: fadeInDown 0.6s ease;
+}
+
+.hero h1 {
+    animation: fadeInDown 0.8s ease;
+}
+
+.hero p {
+    animation: fadeInDown 1s ease;
+}
+
+.hero-buttons {
+    animation: fadeInUp 1s ease;
+}
+
+.hero-stats {
+    animation: fadeInUp 1.2s ease;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Improved Product Cards ── */
+.product-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0,53,128,0.05), rgba(192,57,43,0.05));
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.product-card:hover::after {
+    opacity: 1;
+}
+
+.product-card .no-image {
+    background: linear-gradient(135deg, #e8f0fe, #d0e4ff);
+    transition: transform 0.3s;
+}
+
+.product-card:hover .no-image {
+    transform: scale(1.05);
+}
+
+.product-card .btn {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.product-card .product-info {
+    border-top: 3px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.product-card:hover .product-info {
+    border-top-color: var(--red);
+}
+
+/* ── Improved Category Cards ── */
+.category-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.category-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0,53,128,0.03), rgba(192,57,43,0.03));
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.category-card:hover::after { opacity: 1; }
+
+.category-card .icon {
+    transition: transform 0.3s;
+    display: block;
+}
+
+.category-card:hover .icon {
+    transform: scale(1.2) rotate(-5deg);
+}
