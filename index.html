@@ -40,7 +40,6 @@
 </nav>
 
     <!-- Hero -->
-    <!-- Hero -->
 <section class="hero">
     <div class="hero-badge">✨ Strathmore's #1 Campus Marketplace</div>
     <h1>Your Campus.<br>Your Store.<br><span>Your StrathMart.</span></h1>
@@ -113,6 +112,18 @@
             <a href="products.html" class="btn btn-blue">View All Products</a>
         </div>
     </section>
+
+    <!-- Login / Register Banner -->
+<section class="section" style="background: linear-gradient(135deg, var(--dark-blue), var(--blue)); color: white; text-align: center;">
+    <div id="authBanner">
+        <h2 style="font-size: 28px; margin-bottom: 10px;">Ready to start shopping?</h2>
+        <p style="color: rgba(255,255,255,0.8); margin-bottom: 25px; font-size: 16px;">Join thousands of Strathmore students already using StrathMart!</p>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <a href="login.html" class="btn" style="background: var(--red);">🔑 Login to Your Account</a>
+            <a href="register.html" class="btn-outline">🎓 Create New Account</a>
+        </div>
+    </div>
+</section>
 
     <!-- Why StrathMart -->
     <section class="section" style="background: white;">
@@ -220,17 +231,27 @@
 
         // Check if logged in
         const token = localStorage.getItem('token');
-        if (token) {
-            document.getElementById('authLink').innerHTML = '<a href="#" onclick="logout()">🚪 Logout</a>';
-        }
+const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = 'index.html';
-        }
+if (token) {
+    document.getElementById('authLink').innerHTML = '<a href="#" onclick="logout()">🚪 Logout</a>';
+    document.getElementById('authBanner').innerHTML = `
+        <h2 style="font-size: 28px; margin-bottom: 10px;">Welcome back, ${user.full_name || 'Student'}! 👋</h2>
+        <p style="color: rgba(255,255,255,0.8); margin-bottom: 25px; font-size: 16px;">Ready to shop? Check out our latest products!</p>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <a href="products.html" class="btn" style="background: var(--red);">🛍️ Shop Now</a>
+            <a href="orders.html" class="btn-outline">📦 My Orders</a>
+        </div>
+    `;
+}
 
-        loadFeaturedProducts();
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+}
+
+loadFeaturedProducts();
     </script>
 </body>
 </html>
