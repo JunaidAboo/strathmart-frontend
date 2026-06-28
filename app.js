@@ -29,26 +29,24 @@ function showToast(message, type = 'info', duration = 3000) {
 // ── Hamburger Menu ──
 function toggleMenu() {
     const hamburger = document.getElementById('hamburger');
-    const navUl = document.querySelector('nav ul');
+    const navUl = document.getElementById('navMenu');
     if (hamburger) hamburger.classList.toggle('open');
     if (navUl) navUl.classList.toggle('open');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Close menu when a link is clicked
-    document.querySelectorAll('nav ul li a').forEach(link => {
+    document.querySelectorAll('#navMenu li a').forEach(link => {
         link.addEventListener('click', () => {
             const hamburger = document.getElementById('hamburger');
-            const navUl = document.querySelector('nav ul');
+            const navUl = document.getElementById('navMenu');
             if (hamburger) hamburger.classList.remove('open');
             if (navUl) navUl.classList.remove('open');
         });
     });
 
-    // Close menu when clicking outside
     document.addEventListener('click', (e) => {
         const hamburger = document.getElementById('hamburger');
-        const navUl = document.querySelector('nav ul');
+        const navUl = document.getElementById('navMenu');
         if (hamburger && navUl && !hamburger.contains(e.target) && !navUl.contains(e.target)) {
             hamburger.classList.remove('open');
             navUl.classList.remove('open');

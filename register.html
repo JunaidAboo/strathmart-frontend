@@ -22,27 +22,20 @@
         <img src="./logo.jpeg" alt="StrathMart Logo" style="height: 50px; width: auto; border-radius: 5px;">
         <span>Strath<em>Mart</em></span>
     </a>
-    <div class="hamburger" onclick="toggleMenu()">
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()">
         <span></span>
         <span></span>
         <span></span>
-    </div>
-    <div class="nav-menu" id="navMenu">
-        <button class="hamburger" id="hamburger" onclick="toggleMenu()">
-    <span></span>
-    <span></span>
-    <span></span>
-</button>
-        <ul>
-            <li><a href="index.html">🏠 Home</a></li>
-            <li><a href="products.html">🛍️ Shop</a></li>
-            <li><a href="cart.html">🛒 Cart <span class="nav-cart-badge" id="cartCount">0</span></a></li>
-            <li><a href="orders.html">📦 Orders</a></li>
-            <li><a href="rate.html">⭐ Rate Us</a></li>
-            <li><a href="contact.html">📩 Contact</a></li>
-            <li id="authLink"><a href="login.html">🔑 Login</a></li>
-        </ul>
-    </div>
+    </button>
+    <ul id="navMenu">
+        <li><a href="index.html">🏠 Home</a></li>
+        <li><a href="products.html">🛍️ Shop</a></li>
+        <li><a href="cart.html">🛒 Cart <span class="nav-cart-badge" id="cartCount">0</span></a></li>
+        <li><a href="orders.html">📦 Orders</a></li>
+        <li><a href="rate.html">⭐ Rate Us</a></li>
+        <li><a href="contact.html">📩 Contact</a></li>
+        <li id="authLink"><a href="login.html">🔑 Login</a></li>
+    </ul>
 </nav>
 
     <!-- Register Form -->
