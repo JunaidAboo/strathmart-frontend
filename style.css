@@ -1400,13 +1400,18 @@ footer {
 .hamburger.open span:nth-child(2) { opacity: 0; }
 .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -8px); }
 
+@media (min-width: 769px) {
+    .hamburger { display: none !important; }
+    nav ul { display: flex !important; }
+}
+
 @media (max-width: 768px) {
     .hamburger { display: flex; }
 
     nav ul {
         display: none;
         position: absolute;
-        top: 70px;
+        top: 100%;
         left: 0;
         right: 0;
         background: var(--dark-blue);
