@@ -1376,3 +1376,53 @@ footer {
     .chat-widget { bottom: 20px; left: 15px; }
     .chat-box { width: 300px; }
 }
+
+/* ── Hamburger Menu ── */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 5px;
+}
+
+.hamburger span {
+    width: 25px;
+    height: 3px;
+    background: white;
+    border-radius: 3px;
+    transition: all 0.3s;
+}
+
+.hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 8px); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -8px); }
+
+@media (max-width: 768px) {
+    .hamburger { display: flex; }
+
+    nav ul {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: var(--dark-blue);
+        flex-direction: column;
+        padding: 10px 0;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        z-index: 999;
+    }
+
+    nav ul.open { display: flex; }
+
+    nav ul li a {
+        padding: 12px 20px;
+        font-size: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        flex-direction: row;
+        justify-content: flex-start;
+    }
+}

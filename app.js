@@ -40,3 +40,23 @@ document.addEventListener('click', function(e) {
         menu.classList.remove('open');
     }
 });
+
+// ── Hamburger Menu ──
+function toggleMenu() {
+    const hamburger = document.getElementById('hamburger');
+    const navUl = document.querySelector('nav ul');
+    hamburger.classList.toggle('open');
+    navUl.classList.toggle('open');
+}
+
+// Close menu when a link is clicked
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('nav ul li a').forEach(link => {
+        link.addEventListener('click', () => {
+            const hamburger = document.getElementById('hamburger');
+            const navUl = document.querySelector('nav ul');
+            if (hamburger) hamburger.classList.remove('open');
+            if (navUl) navUl.classList.remove('open');
+        });
+    });
+});
