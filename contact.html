@@ -6,6 +6,9 @@
     <link rel="icon" type="image/png" href="favicon-32x32.png">
     <title>StrathMart | Strathmore University Marketplace</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>emailjs.init("GGTtzHe5W7S12IF3j");</script>
+<script src="chatbot.js" defer></script>
     <script src="chatbot.js" defer></script>
     <script src="app.js" defer></script>
 </head>
@@ -139,37 +142,42 @@
         }
 
         async function submitContact() {
-            const alertBox = document.getElementById('alertBox');
-            const subject = document.getElementById('subject').value;
-            const message = document.getElementById('message').value;
+    const alertBox = document.getElementById('alertBox');
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-            if (!subject || !message) {
-                alertBox.innerHTML = '<div class="alert alert-error">⚠️ Please fill in all fields</div>';
-                return;
-            }
+    if (!subject || !message) {
+        alertBox.innerHTML = '<div class="alert alert-error">⚠️ Please fill in all fields</div>';
+        return;
+    }
 
-            try {
-                const headers = { 'Content-Type': 'application/json' };
-                if (token) headers['Authorization'] = `Bearer ${token}`;
+    try {
+        // Send to backend
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        await fetch(`${API}/contacts/`, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({ subject, message })
+        });
 
-                const res = await fetch(`${API}/contacts/`, {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify({ subject, message })
-                });
+        // Send email via EmailJS
+        await emailjs.send('service_q4vvozy', 'template_197mv5g', {
+            name: user.full_name || 'Guest',
+            email: user.email || 'guest@strathmore.edu',
+            subject: subject,
+            message: message
+        });
 
-                if (res.ok) {
-                    alertBox.innerHTML = '<div class="alert alert-success">✅ Message sent! We\'ll get back to you within 24 hours.</div>';
-                    document.getElementById('subject').value = '';
-                    document.getElementById('message').value = '';
-                } else {
-                    const data = await res.json();
-                    alertBox.innerHTML = `<div class="alert alert-error">❌ ${data.detail}</div>`;
-                }
-            } catch (err) {
-                alertBox.innerHTML = '<div class="alert alert-error">❌ Could not send message. Please try again.</div>';
-            }
-        }
+        alertBox.innerHTML = '<div class="alert alert-success">✅ Message sent! We\'ll get back to you within 24 hours.</div>';
+        document.getElementById('subject').value = '';
+        document.getElementById('message').value = '';
+
+    } catch (err) {
+        alertBox.innerHTML = '<div class="alert alert-error">❌ Could not send message. Please try again.</div>';
+    }
+}
 
         async function updateCartCount() {
             try {
