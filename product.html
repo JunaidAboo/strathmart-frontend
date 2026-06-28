@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="favicon-32x32.png">
+    <title>Product | StrathMart</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="chatbot.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <span>🎓 Welcome to StrathMart — Strathmore University's Official Marketplace</span>
+        <span>📍 Strathmore University, Nairobi</span>
+    </div>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="index.html" class="logo">
+            <img src="./logo.jpeg" alt="StrathMart Logo" style="height: 50px; width: auto; border-radius: 5px;">
+            <span>Strath<em>Mart</em></span>
+        </a>
+        <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <ul id="navMenu">
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="products.html">🛍️ Shop</a></li>
+            <li><a href="cart.html">🛒 Cart <span class="nav-cart-badge" id="cartCount">0</span></a></li>
+            <li><a href="orders.html">📦 Orders</a></li>
+            <li><a href="rate.html">⭐ Rate Us</a></li>
+            <li><a href="contact.html">📩 Contact</a></li>
+            <li id="authLink"><a href="login.html">🔑 Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Product Detail -->
+    <section class="section">
+        <div id="productDetail">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading product...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="section" style="background: white;">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="section-header">
+                <div class="tag">Community Reviews</div>
+                <h2>What Students Are Saying</h2>
+            </div>
+            <div id="reviewsContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading reviews...</p>
+                </div>
+            </div>
+
+            <!-- Leave a review -->
+            <div class="form-container" style="margin-top: 40px;">
+                <h2>Leave a Review</h2>
+                <p class="subtitle">Share your experience with this product</p>
+                <div id="reviewAlertBox"></div>
+                <div class="form-group" style="text-align: center;">
+                    <label>Your Rating</label>
+                    <div class="stars" id="starsContainer">
+                        <span class="star" onclick="setRating(1)">★</span>
+                        <span class="star" onclick="setRating(2)">★</span>
+                        <span class="star" onclick="setRating(3)">★</span>
+                        <span class="star" onclick="setRating(4)">★</span>
+                        <span class="star" onclick="setRating(5)">★</span>
+                    </div>
+                    <p id="ratingText" style="color: var(--gray); font-size: 14px;">Click a star to rate</p>
+                </div>
+                <div class="form-group">
+                    <label>Your Comment (optional)</label>
+                    <textarea id="reviewComment" placeholder="Tell us about this product..."></textarea>
+                </div>
+                <button class="btn" onclick="submitReview()">⭐ Submit Review</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-bottom" style="border:none; padding:0;">
+            <span>© 2026 StrathMart. Made with <span class="red">❤️</span> at Strathmore University</span>
+            <span>Nairobi, Kenya 🇰🇪</span>
+        </div>
+    </footer>
+
+    <script>
+        const API = 'https://strathmart-api.onrender.com';
+        const token = localStorage.getItem('token');
+        let selectedRating = 0;
+        let currentProduct = null;
+
+        if (token) {
+            document.getElementById('authLink').innerHTML = '<a href="#" onclick="logout()">🚪 Logout</a>';
+            updateCartCount();
+        }
+
+        // Get product ID from URL
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id');
+
+        if (!productId) {
+            window.location.href = 'products.html';
+        }
+
+        const icons = {
+            'Electronics': '💻',
+            'Merchandise': '👕',
+            'Stationery': '✏️',
+            'Food': '🍽️'
+        };
+
+        const ratingLabels = {
+            1: '😞 Poor',
+            2: '😕 Fair',
+            3: '😊 Good',
+            4: '😄 Very Good',
+            5: '🤩 Excellent!'
+        };
+
+        async function loadProduct() {
+            try {
+                const [productRes, categoriesRes] = await Promise.all([
+                    fetch(`${API}/products/${productId}`),
+                    fetch(`${API}/products/categories`)
+                ]);
+
+                currentProduct = await productRes.json();
+                const categories = await categoriesRes.json();
+                const category = categories.find(c => c.id === currentProduct.category_id);
+                const catName = category ? category.name : 'Unknown';
+                const icon = icons[catName] || '🛍️';
+
+                document.title = `${currentProduct.name} | StrathMart`;
+
+                document.getElementById('productDetail').innerHTML = `
+                    <div style="max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
+                        
+                        <!-- Product Image -->
+                        <div>
+                            ${currentProduct.image_url
+                                ? `<img src="${currentProduct.image_url}" alt="${currentProduct.name}" style="width:100%; border-radius: 16px; box-shadow: var(--shadow-hover);">`
+                                : `<div class="no-image" style="height: 350px; border-radius: 16px; font-size: 80px;">${icon}</div>`
+                            }
+                        </div>
+
+                        <!-- Product Info -->
+                        <div>
+                            <div class="product-badge" style="position: relative; display: inline-block; margin-bottom: 15px;">${catName}</div>
+                            <h1 style="font-size: 28px; color: var(--dark-blue); margin-bottom: 10px;">${currentProduct.name}</h1>
+                            <p style="color: var(--gray); font-size: 15px; margin-bottom: 20px; line-height: 1.7;">${currentProduct.description || 'No description available'}</p>
+                            
+                            <div style="background: var(--light-gray); padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+                                <p style="font-size: 36px; font-weight: 800; color: var(--red); margin-bottom: 5px;">KES ${currentProduct.price.toLocaleString()}</p>
+                                <p style="color: #28a745; font-size: 14px;">✅ ${currentProduct.stock} items in stock</p>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <button class="btn" style="flex: 1;" onclick="addToCart()">🛒 Add to Cart</button>
+                                <button class="btn btn-blue" style="flex: 1;" onclick="buyNow()">⚡ Buy Now</button>
+                            </div>
+
+                            <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 10px; box-shadow: var(--shadow);">
+                                <p style="font-size: 13px; color: var(--gray);">🚚 <strong>Free delivery</strong> on campus</p>
+                                <p style="font-size: 13px; color: var(--gray); margin-top: 8px;">💳 <strong>Pay on delivery</strong></p>
+                                <p style="font-size: 13px; color: var(--gray); margin-top: 8px;">↩️ <strong>Easy returns</strong> within 7 days</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            } catch (err) {
+                document.getElementById('productDetail').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <h3>Could not load product</h3>
+                        <p>Please try again</p>
+                        <a href="products.html" class="btn">← Back to Shop</a>
+                    </div>`;
+            }
+        }
+
+        async function addToCart() {
+            if (!token) {
+                alert('Please login first!');
+                window.location.href = 'login.html';
+                return;
+            }
+            try {
+                const res = await fetch(`${API}/cart/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ product_id: parseInt(productId), quantity: 1 })
+                });
+                if (res.ok) {
+                    showToast(`${currentProduct.name} added to cart!`, 'success');
+                    updateCartCount();
+                } else {
+                    const data = await res.json();
+                    showToast(data.detail, 'error');
+                }
+            } catch (err) {
+                showToast('Could not add to cart', 'error');
+            }
+        }
+
+        async function buyNow() {
+            if (!token) {
+                alert('Please login first!');
+                window.location.href = 'login.html';
+                return;
+            }
+            try {
+                const res = await fetch(`${API}/cart/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ product_id: parseInt(productId), quantity: 1 })
+                });
+                if (res.ok) {
+                    window.location.href = 'cart.html';
+                }
+            } catch (err) {
+                showToast('Could not process. Please try again.', 'error');
+            }
+        }
+
+        async function loadReviews() {
+            try {
+                const res = await fetch(`${API}/ratings/`);
+                const ratings = await res.json();
+                const container = document.getElementById('reviewsContainer');
+
+                if (ratings.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">⭐</div>
+                            <h3>No reviews yet</h3>
+                            <p>Be the first to leave a review!</p>
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = ratings.reverse().map(r => `
+                    <div class="rating-card">
+                        <div class="stars-display">${'★'.repeat(r.stars)}${'☆'.repeat(5 - r.stars)}</div>
+                        <p class="comment">${r.comment || 'No comment left'}</p>
+                        <p class="meta">📅 ${new Date(r.created_at).toLocaleDateString('en-KE', {
+                            year: 'numeric', month: 'long', day: 'numeric'
+                        })}</p>
+                    </div>
+                `).join('');
+            } catch (err) {
+                document.getElementById('reviewsContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <h3>Could not load reviews</h3>
+                    </div>`;
+            }
+        }
+
+        function setRating(value) {
+            selectedRating = value;
+            document.querySelectorAll('.star').forEach((star, index) => {
+                star.classList.toggle('active', index < value);
+            });
+            document.getElementById('ratingText').textContent = ratingLabels[value];
+        }
+
+        document.querySelectorAll('.star').forEach((star, index) => {
+            star.addEventListener('mouseover', () => {
+                document.querySelectorAll('.star').forEach((s, i) => {
+                    s.style.color = i <= index ? '#f0a500' : '#ddd';
+                });
+            });
+            star.addEventListener('mouseout', () => {
+                document.querySelectorAll('.star').forEach((s, i) => {
+                    s.style.color = i < selectedRating ? '#f0a500' : '#ddd';
+                });
+            });
+        });
+
+        async function submitReview() {
+            const alertBox = document.getElementById('reviewAlertBox');
+            if (!token) {
+                alertBox.innerHTML = '<div class="alert alert-error">❌ Please login first to leave a review</div>';
+                return;
+            }
+            if (selectedRating === 0) {
+                alertBox.innerHTML = '<div class="alert alert-error">⚠️ Please select a star rating</div>';
+                return;
+            }
+            const comment = document.getElementById('reviewComment').value;
+            try {
+                const res = await fetch(`${API}/ratings/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ stars: selectedRating, comment: comment || null })
+                });
+                if (res.ok) {
+                    alertBox.innerHTML = '<div class="alert alert-success">✅ Review submitted!</div>';
+                    document.getElementById('reviewComment').value = '';
+                    setRating(0);
+                    loadReviews();
+                } else {
+                    const data = await res.json();
+                    alertBox.innerHTML = `<div class="alert alert-error">❌ ${data.detail}</div>`;
+                }
+            } catch (err) {
+                alertBox.innerHTML = '<div class="alert alert-error">❌ Could not submit review</div>';
+            }
+        }
+
+        async function updateCartCount() {
+            if (!token) return;
+            try {
+                const res = await fetch(`${API}/cart/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const cart = await res.json();
+                document.getElementById('cartCount').textContent = cart.length;
+            } catch (err) {}
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        loadProduct();
+        loadReviews();
+    </script>
+</body>
+</html>

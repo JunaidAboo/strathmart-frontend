@@ -169,7 +169,8 @@
                 <p class="category-tag">${p.description || ''}</p>
                 <p class="price">KES ${p.price.toLocaleString()}</p>
                 <p class="stock">✅ ${p.stock} in stock</p>
-                <button class="btn btn-sm" onclick="addToCart(${p.id}, '${p.name}')">🛒 Add to Cart</button>
+                <a href="product.html?id=${p.id}" class="btn btn-sm" style="display:block; text-align:center; margin-bottom: 8px;">👁️ View Product</a>
+                <button class="btn btn-sm" style="width:100%; background: var(--blue);" onclick="addToCart(${p.id}, '${p.name}')">🛒 Add to Cart</button>
             </div>
         </div>`;
     }).join('');
