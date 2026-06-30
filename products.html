@@ -47,13 +47,19 @@
 
     <!-- Filter Bar -->
     <div class="filter-bar">
-        <button class="filter-btn active" onclick="filterProducts('all', this)">All Products</button>
-        <button class="filter-btn" onclick="filterProducts('Electronics', this)">💻 Electronics</button>
-        <button class="filter-btn" onclick="filterProducts('Merchandise', this)">👕 Merchandise</button>
-        <button class="filter-btn" onclick="filterProducts('Stationery', this)">✏️ Stationery</button>
-        <button class="filter-btn" onclick="filterProducts('Food', this)">🍽️ Food</button>
+    <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+        <input type="text" id="searchInput" placeholder="🔍 Search products..." 
+            style="padding: 10px 15px; border: 2px solid #ddd; border-radius: 25px; font-size: 14px; outline: none; width: 100%; max-width: 300px; transition: border 0.3s;"
+            oninput="searchProducts(this.value)"
+            onfocus="this.style.borderColor='var(--blue)'"
+            onblur="this.style.borderColor='#ddd'">
     </div>
-
+    <button class="filter-btn active" onclick="filterProducts('all', this)">All</button>
+    <button class="filter-btn" onclick="filterProducts('Electronics', this)">💻 Electronics</button>
+    <button class="filter-btn" onclick="filterProducts('Merchandise', this)">👕 Merchandise</button>
+    <button class="filter-btn" onclick="filterProducts('Stationery', this)">✏️ Stationery</button>
+    <button class="filter-btn" onclick="filterProducts('Food', this)">🍽️ Food</button>
+</div>
     <!-- Products -->
     <section class="section">
         <div class="products-grid" id="productsGrid">
@@ -190,6 +196,23 @@
                 renderProducts(filtered);
             }
         }
+        function searchProducts(query) {
+    const filtered = allProducts.filter(p => {
+        const catName = getCategoryName(p.category_id);
+        return p.name.toLowerCase().includes(query.toLowerCase()) ||
+               p.description?.toLowerCase().includes(query.toLowerCase()) ||
+               catName.toLowerCase().includes(query.toLowerCase());
+    });
+
+    // Reset filter buttons
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+
+    if (query === '') {
+        renderProducts(allProducts);
+    } else {
+        renderProducts(filtered);
+    }
+}
 
         async function addToCart(productId, productName) {
             const token = localStorage.getItem('token');
