@@ -1,94 +1,115 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StrathMart Admin</title>
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<h1>🛠 Admin Dashboard</h1>
+<!-- NAVBAR -->
+<nav>
+    <div class="logo">
+        <div class="logo-icon">A</div>
+        <span>Admin <em>Panel</em></span>
+    </div>
 
-<div class="form-box">
-    <h3>Add Product</h3>
+    <ul>
+        <li><a href="#" class="active">Dashboard</a></li>
+        <li><a href="#">Products</a></li>
+        <li><a href="#">Orders</a></li>
+        <li><a href="#">Users</a></li>
+    </ul>
+</nav>
 
-```
-<input type="text" id="name" placeholder="Product Name">
-<input type="number" id="price" placeholder="Price">
-<input type="text" id="image" placeholder="Image URL">
+<!-- HEADER -->
+<div class="page-header">
+    <h1>Admin Dashboard</h1>
+    <p>Manage your store easily</p>
+</div>
 
-<select id="category">
-    <option value="1">Electronics</option>
-    <option value="2">Merchandise</option>
-    <option value="3">Stationery</option>
-    <option value="4">Food</option>
-</select>
+<!-- MAIN SECTION -->
+<div class="section">
 
-<button onclick="addProduct()">Add Product</button>
-```
+    <!-- STATS -->
+    <div class="categories">
+        <div class="category-card">
+            <span class="icon">📦</span>
+            <h3>120 Products</h3>
+        </div>
+
+        <div class="category-card">
+            <span class="icon">🛒</span>
+            <h3>45 Orders</h3>
+        </div>
+
+        <div class="category-card">
+            <span class="icon">👤</span>
+            <h3>30 Users</h3>
+        </div>
+
+        <div class="category-card">
+            <span class="icon">💰</span>
+            <h3>$2,400</h3>
+        </div>
+    </div>
+
+    <!-- ADD PRODUCT FORM -->
+    <div class="form-container">
+        <h2>Add Product</h2>
+
+        <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" placeholder="Enter product name">
+        </div>
+
+        <div class="form-group">
+            <label>Price</label>
+            <input type="number" placeholder="Enter price">
+        </div>
+
+        <div class="form-group">
+            <label>Category</label>
+            <input type="text" placeholder="Enter category">
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <textarea placeholder="Enter description"></textarea>
+        </div>
+
+        <button class="btn">Add Product</button>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="section-header">
+        <h2>Products</h2>
+    </div>
+
+    <div class="products-grid">
+
+        <div class="product-card">
+            <div class="no-image">📱</div>
+            <div class="product-info">
+                <h3>Phone</h3>
+                <div class="price">$500</div>
+                <button class="btn-danger">Delete</button>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="no-image">💻</div>
+            <div class="product-info">
+                <h3>Laptop</h3>
+                <div class="price">$900</div>
+                <button class="btn-danger">Delete</button>
+            </div>
+        </div>
+
+    </div>
 
 </div>
 
-<h2>📦 Products</h2>
-<div id="productList"></div>
-
-<script>
-const API_URL = "https://strathmart-api.onrender.com/products";
-
-async function fetchProducts() {
-    const res = await fetch(API_URL);
-    const data = await res.json();
-
-    const list = document.getElementById("productList");
-    list.innerHTML = "";
-
-    data.forEach(p => {
-        list.innerHTML += `
-            <div class="product">
-                <img src="${p.image_url}" alt="">
-                <div>
-                    <strong>${p.name}</strong>
-                    <p>KES ${p.price}</p>
-                </div>
-                <button class="delete-btn" onclick="deleteProduct(${p.id})">Delete</button>
-            </div>
-        `;
-    });
-}
-
-async function addProduct() {
-    const name = document.getElementById("name").value;
-    const price = document.getElementById("price").value;
-    const image = document.getElementById("image").value;
-    const category = document.getElementById("category").value;
-
-    await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            name,
-            price,
-            image_url: image,
-            category_id: category
-        })
-    });
-
-    fetchProducts();
-}
-
-async function deleteProduct(id) {
-    await fetch(`${API_URL}/${id}`, {
-        method: "DELETE"
-    });
-
-    fetchProducts();
-}
-
-fetchProducts();
-</script>
-
 </body>
 </html>
-

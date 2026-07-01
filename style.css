@@ -1534,3 +1534,81 @@ footer {
 .delete-btn:hover {
     background: darkred;
 }
+
+/* ===== ADMIN PAGE UPGRADE ===== */
+
+.navbar {
+    background: var(--blue);
+    color: white;
+    padding: 15px 20px;
+    font-size: 20px;
+}
+
+.admin-container {
+    padding: 20px;
+}
+
+/* Card (reuse for clean UI) */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 400px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.card input,
+.card select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.card button {
+    width: 100%;
+    padding: 10px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.section-title {
+    margin-top: 20px;
+}
+
+/* Make products look like your main site */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.product {
+    background: white;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+.product img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.delete-btn {
+    margin-top: 10px;
+    background: red;
+    color: white;
+    border: none;
+    padding: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+}
