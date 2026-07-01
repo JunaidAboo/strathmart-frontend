@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StrathMart Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🛠 Admin Dashboard</h1>
+
+<div class="form-box">
+    <h3>Add Product</h3>
+
+```
+<input type="text" id="name" placeholder="Product Name">
+<input type="number" id="price" placeholder="Price">
+<input type="text" id="image" placeholder="Image URL">
+
+<select id="category">
+    <option value="1">Electronics</option>
+    <option value="2">Merchandise</option>
+    <option value="3">Stationery</option>
+    <option value="4">Food</option>
+</select>
+
+<button onclick="addProduct()">Add Product</button>
+```
+
+</div>
+
+<h2>📦 Products</h2>
+<div id="productList"></div>
+
+<script>
+const API_URL = "https://strathmart-api.onrender.com/products";
+
+async function fetchProducts() {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+
+    const list = document.getElementById("productList");
+    list.innerHTML = "";
+
+    data.forEach(p => {
+        list.innerHTML += `
+            <div class="product">
+                <img src="${p.image_url}" alt="">
+                <div>
+                    <strong>${p.name}</strong>
+                    <p>KES ${p.price}</p>
+                </div>
+                <button class="delete-btn" onclick="deleteProduct(${p.id})">Delete</button>
+            </div>
+        `;
+    });
+}
+
+async function addProduct() {
+    const name = document.getElementById("name").value;
+    const price = document.getElementById("price").value;
+    const image = document.getElementById("image").value;
+    const category = document.getElementById("category").value;
+
+    await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name,
+            price,
+            image_url: image,
+            category_id: category
+        })
+    });
+
+    fetchProducts();
+}
+
+async function deleteProduct(id) {
+    await fetch(`${API_URL}/${id}`, {
+        method: "DELETE"
+    });
+
+    fetchProducts();
+}
+
+fetchProducts();
+</script>
+
+</body>
+</html>
+
