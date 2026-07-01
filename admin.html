@@ -1,116 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Panel</title>
-    <link rel="stylesheet" href="Pasted code.css">
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+    font-family: Arial;
+    background: #f5f6fa;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+}
+
+.sidebar {
+    width: 200px;
+    background: #111;
+    color: white;
+    height: 100vh;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-bottom: 20px;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    margin: 10px 0;
+    text-decoration: none;
+}
+
+.main {
+    flex: 1;
+    padding: 20px;
+}
+
+.cards {
+    display: flex;
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 150px;
+    text-align: center;
+}
+
+.form {
+    margin-top: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+input {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+}
+
+button {
+    padding: 10px;
+    background: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.product {
+    background: white;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+</style>
 </head>
 
 <body>
 
-<!-- NAVBAR (matches your CSS exactly) -->
-<nav>
-    <a href="#" class="logo">
-        <div class="logo-icon">S</div>
-        <span>Strath<span><em>Mart</em></span></span>
-    </a>
+<div class="container">
 
-    <div class="nav-menu">
-        <ul>
-            <li><a href="#" class="active">Admin</a></li>
-            <li><a href="/">Store</a></li>
-        </ul>
-    </div>
-</nav>
-
-<!-- HEADER -->
-<div class="page-header">
-    <h1>Admin Dashboard</h1>
-    <p>Manage products</p>
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <a href="#">Dashboard</a>
+    <a href="#">Products</a>
+    <a href="#">Orders</a>
+    <a href="#">Users</a>
 </div>
 
-<!-- MAIN -->
-<div class="section">
+<div class="main">
+    <h1>Admin Dashboard</h1>
+    <p>Manage your store easily</p>
 
-    <!-- ADD PRODUCT -->
-    <div class="form-container">
-        <h2>Add Product</h2>
-
-        <div class="form-group">
-            <label>Name</label>
-            <input type="text" id="name">
+    <div class="cards">
+        <div class="card">
+            📦 <br><span id="productCount">0</span> Products
         </div>
-
-        <div class="form-group">
-            <label>Price</label>
-            <input type="number" id="price">
+        <div class="card">
+            🛒 <br>45 Orders
         </div>
-
-        <div class="form-group">
-            <label>Image URL</label>
-            <input type="text" id="image">
+        <div class="card">
+            👤 <br>30 Users
         </div>
-
-        <button class="btn" onclick="addProduct()">Add Product</button>
+        <div class="card">
+            💰 <br>$2,400
+        </div>
     </div>
 
-    <!-- PRODUCTS -->
-    <div class="section-header">
-        <h2>Products</h2>
+    <div class="form">
+        <h3>Add Product</h3>
+        <input id="name" placeholder="Product Name">
+        <input id="price" placeholder="Price">
+        <input id="category" placeholder="Category">
+        <input id="desc" placeholder="Description">
+        <button onclick="addProduct()">Add Product</button>
     </div>
 
-    <div id="productList" class="products-grid"></div>
+    <h2>Products</h2>
+    <div id="productList"></div>
+
+</div>
 
 </div>
 
 <script>
-const API_URL = "https://strathmart-api.onrender.com/products";
 
-async function fetchProducts() {
-    const res = await fetch(API_URL);
-    const data = await res.json();
+let products = JSON.parse(localStorage.getItem("products")) || [];
 
-    const list = document.getElementById("productList");
+function saveProducts() {
+    localStorage.setItem("products", JSON.stringify(products));
+}
+
+function renderProducts() {
+    let list = document.getElementById("productList");
     list.innerHTML = "";
 
-    data.forEach(p => {
+    products.forEach((p, index) => {
         list.innerHTML += `
-        <div class="product-card">
-            <img src="${p.image_url}">
-            <div class="product-info">
-                <h3>${p.name}</h3>
-                <div class="price">KES ${p.price}</div>
-                <button class="btn-danger" onclick="deleteProduct(${p.id})">Delete</button>
+        <div class="product">
+            <div>
+                <b>${p.name}</b><br>
+                $${p.price}
             </div>
+            <button onclick="deleteProduct(${index})">Delete</button>
         </div>
         `;
     });
+
+    document.getElementById("productCount").innerText = products.length;
 }
 
-async function addProduct() {
-    const name = document.getElementById("name").value;
-    const price = document.getElementById("price").value;
-    const image = document.getElementById("image").value;
+function addProduct() {
+    let name = document.getElementById("name").value;
+    let price = document.getElementById("price").value;
+    let category = document.getElementById("category").value;
+    let desc = document.getElementById("desc").value;
 
-    await fetch(API_URL, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            name,
-            price,
-            image_url: image
-        })
-    });
+    if (!name || !price) {
+        alert("Fill all fields");
+        return;
+    }
 
-    fetchProducts();
+    products.push({ name, price, category, desc });
+    saveProducts();
+    renderProducts();
+
+    document.getElementById("name").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("category").value = "";
+    document.getElementById("desc").value = "";
 }
 
-async function deleteProduct(id) {
-    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-    fetchProducts();
+function deleteProduct(index) {
+    products.splice(index, 1);
+    saveProducts();
+    renderProducts();
 }
 
-fetchProducts();
+renderProducts();
+
 </script>
 
 </body>
