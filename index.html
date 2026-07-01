@@ -39,6 +39,19 @@
     </ul>
 </nav>
 
+<!-- Promotional Banner -->
+<section class="promo-banner">
+    <div class="banner-slide active">
+        🔥 50% OFF Hoodies – Limited Time!
+    </div>
+    <div class="banner-slide">
+        🎓 Exclusive Student Deals on Electronics
+    </div>
+    <div class="banner-slide">
+        🚚 Free Delivery Within Campus
+    </div>
+</section>
+
     <!-- Hero -->
 <section class="hero">
     <div class="hero-badge">✨ Strathmore's #1 Campus Marketplace</div>
@@ -227,6 +240,17 @@
                     </div>`;
             }
         }
+
+        let currentSlide = 0;
+const slides = document.querySelectorAll('.banner-slide');
+
+function showNextSlide() {
+    slides[currentSlide].classList.remove('active');
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add('active');
+}
+
+setInterval(showNextSlide, 3000);
 
         // Check if logged in
         const token = localStorage.getItem('token');
